@@ -83,7 +83,9 @@ def seed_demo_docs() -> None:
 
 
 def terms(text: str) -> set[str]:
-    return {w for w in re.findall(r"[a-z0-9]{3,}", text.lower())}
+    # Remove generic question words so unrelated queries do not appear relevant.
+    stopwords = {"the", "and", "for", "are", "was", "were", "what", "when", "where", "who", "why", "how", "does", "did", "can", "could", "would", "should", "with", "from", "that", "this", "have", "has", "had", "you", "your", "our", "their", "they", "them", "about", "into", "using"}
+    return {w for w in re.findall(r"[a-z0-9]{3,}", text.lower()) if w not in stopwords}
 
 
 class AnswerRequest(BaseModel):
