@@ -121,7 +121,7 @@ async def polite_get(client: httpx.AsyncClient, url: str, min_delay: float = 1.0
         wait = min_delay - (time.monotonic() - _last_request)
         if wait > 0:
             await asyncio.sleep(wait)
-        response = await client.get(url, follow_redirects=True, timeout=20)
+        response = await client.get(url, follow_redirects=False, timeout=20)
         _last_request = time.monotonic()
     return response
 
