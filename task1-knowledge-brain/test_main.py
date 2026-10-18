@@ -3,8 +3,8 @@ import main as kb
 from fastapi.testclient import TestClient
 
 
-def test_terms_normalizes_and_ignores_short_tokens():
-    assert kb.terms("How to use API v2 settings") == {"how", "use", "api", "settings"}
+def test_terms_normalizes_and_ignores_generic_words():
+    assert kb.terms("How to use API v2 settings") == {"api", "settings"}
 
 
 def test_seeded_demo_answer_is_cited_and_disclosed(tmp_path, monkeypatch):
