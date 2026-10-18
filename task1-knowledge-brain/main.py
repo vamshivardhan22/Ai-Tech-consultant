@@ -21,6 +21,7 @@ import httpx
 from anthropic import AsyncAnthropic
 from bs4 import BeautifulSoup
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field, HttpUrl
 
 DB_PATH = os.getenv("DATABASE_PATH", "knowledge.db")
@@ -28,6 +29,7 @@ SITEMAP_URL = "https://support.brilliantdirectories.com/support/sitemap.xml"
 MODEL = os.getenv("CLAUDE_MODEL", "claude-sonnet-4-5")
 API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
 app = FastAPI(title="AI Tech Consultant — Knowledge Brain", version="0.1.0")
+app.add_middleware(CORSMiddleware, allow_origins=["http://localhost:8080"], allow_credentials=False, allow_methods=["GET", "POST", "OPTIONS"], allow_headers=["*"])
 _rate_lock = asyncio.Lock()
 _last_request = 0.0
 
