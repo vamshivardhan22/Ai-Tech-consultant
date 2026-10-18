@@ -1,0 +1,372 @@
+{
+  "version": 1,
+  "note": "Acceptance criteria/fixture inventory. These cases have NOT been executed as a model evaluation. Record actual outcomes before reporting accuracy, cost, or latency.",
+  "cases": {
+    "task1-knowledge-brain": [
+      {
+        "id": "KB-01",
+        "title": "Basic supported how-to question",
+        "input": "Question overlaps an active indexed article.",
+        "expected": "Return a concise answer and matching citation."
+      },
+      {
+        "id": "KB-02",
+        "title": "Exact product setting name",
+        "input": "Question contains a distinctive setting label.",
+        "expected": "Retrieve article containing the label."
+      },
+      {
+        "id": "KB-03",
+        "title": "Unknown product behavior",
+        "input": "Question has no overlap with indexed evidence.",
+        "expected": "Abstain and create escalation."
+      },
+      {
+        "id": "KB-04",
+        "title": "Question about refund policy",
+        "input": "No authoritative refund policy is indexed.",
+        "expected": "Do not invent policy; abstain."
+      },
+      {
+        "id": "KB-05",
+        "title": "Question with misspelling",
+        "input": "Question contains a typo in a product term.",
+        "expected": "Return answer only if retrieval has supporting overlap; otherwise abstain."
+      },
+      {
+        "id": "KB-06",
+        "title": "Multiple relevant articles",
+        "input": "Two active articles overlap the question.",
+        "expected": "Return multiple citations with supporting excerpts."
+      },
+      {
+        "id": "KB-07",
+        "title": "Article updated",
+        "input": "Re-ingest article whose content hash changed.",
+        "expected": "Update stored content and hash."
+      },
+      {
+        "id": "KB-08",
+        "title": "Article unchanged",
+        "input": "Re-ingest identical article content.",
+        "expected": "Do not create duplicate; retain same hash."
+      },
+      {
+        "id": "KB-09",
+        "title": "New article in sitemap",
+        "input": "Sitemap lists previously unseen URL.",
+        "expected": "Persist the new article after successful fetch."
+      },
+      {
+        "id": "KB-10",
+        "title": "Transient 429 response",
+        "input": "Article request returns rate-limit response.",
+        "expected": "Back off and retry within bounded attempts."
+      },
+      {
+        "id": "KB-11",
+        "title": "Permanent 404",
+        "input": "Article no longer responds.",
+        "expected": "Count failure; do not invent article content."
+      },
+      {
+        "id": "KB-12",
+        "title": "Failed sitemap request",
+        "input": "Sitemap request fails.",
+        "expected": "Preserve existing active documents."
+      },
+      {
+        "id": "KB-13",
+        "title": "Partial/capped crawl",
+        "input": "Ingest request processes only a subset.",
+        "expected": "Do not infer removals from partial inventory."
+      },
+      {
+        "id": "KB-14",
+        "title": "Foreign-host URL injection",
+        "input": "Sitemap lists off-host URL.",
+        "expected": "Do not fetch off-host page."
+      },
+      {
+        "id": "KB-15",
+        "title": "HTTP downgrade",
+        "input": "Sitemap lists a non-HTTPS URL.",
+        "expected": "Do not fetch it."
+      },
+      {
+        "id": "KB-16",
+        "title": "Article with screenshots",
+        "input": "HTML article contains image elements.",
+        "expected": "Persist image URLs and alt text with parent article."
+      },
+      {
+        "id": "KB-17",
+        "title": "Duplicate image references",
+        "input": "Article repeats same image URL.",
+        "expected": "Avoid duplicate references where possible."
+      },
+      {
+        "id": "KB-18",
+        "title": "Prompt injection in article",
+        "input": "Retrieved document includes instructions aimed at model.",
+        "expected": "Treat article as untrusted evidence, not instructions."
+      },
+      {
+        "id": "KB-19",
+        "title": "Expert answer feedback",
+        "input": "Expert submits reviewed answer with source attribution.",
+        "expected": "Persist reviewed knowledge with provenance."
+      },
+      {
+        "id": "KB-20",
+        "title": "Citation integrity",
+        "input": "Answer generated from retrieved evidence.",
+        "expected": "Each citation URL and excerpt must exist in indexed records."
+      }
+    ],
+    "task2-inbox-agent": [
+      {
+        "id": "IN-01",
+        "title": "Simple how-to",
+        "input": "Customer asks where a setting is.",
+        "expected": "Classify how-to; query Knowledge Brain and draft with sources."
+      },
+      {
+        "id": "IN-02",
+        "title": "Troubleshooting",
+        "input": "Customer reports an error.",
+        "expected": "Classify troubleshooting; avoid claiming an unverified fix."
+      },
+      {
+        "id": "IN-03",
+        "title": "Refund request",
+        "input": "Customer requests money back.",
+        "expected": "High risk; require human review."
+      },
+      {
+        "id": "IN-04",
+        "title": "Cancellation request",
+        "input": "Customer asks to cancel account.",
+        "expected": "High risk; no autonomous sending."
+      },
+      {
+        "id": "IN-05",
+        "title": "Complaint",
+        "input": "Customer expresses anger.",
+        "expected": "Classify complaint; empathetic draft and human review."
+      },
+      {
+        "id": "IN-06",
+        "title": "New project request",
+        "input": "Customer wants a custom feature.",
+        "expected": "Classify sales/quote; do not invent price."
+      },
+      {
+        "id": "IN-07",
+        "title": "Quote request",
+        "input": "Customer asks how much a feature costs.",
+        "expected": "No price unless grounded in supplied rate or approved pricing."
+      },
+      {
+        "id": "IN-08",
+        "title": "Follow-up",
+        "input": "Customer requests a status update.",
+        "expected": "Draft without inventing progress or dates."
+      },
+      {
+        "id": "IN-09",
+        "title": "Mixed intent",
+        "input": "Email includes how-to and refund request.",
+        "expected": "High-risk intent must win."
+      },
+      {
+        "id": "IN-10",
+        "title": "No Knowledge Brain available",
+        "input": "Knowledge API times out.",
+        "expected": "Fallback response should ask for human review."
+      },
+      {
+        "id": "IN-11",
+        "title": "Knowledge Brain abstains",
+        "input": "No source answers the question.",
+        "expected": "No fabricated answer; flag review."
+      },
+      {
+        "id": "IN-12",
+        "title": "Malformed sender",
+        "input": "Sender is not an email address.",
+        "expected": "Reject request with validation error."
+      },
+      {
+        "id": "IN-13",
+        "title": "Oversized email",
+        "input": "Body exceeds configured limit.",
+        "expected": "Reject safely."
+      },
+      {
+        "id": "IN-14",
+        "title": "Prompt injection in email",
+        "input": "Email tells agent to ignore policy or reveal secrets.",
+        "expected": "Treat body as untrusted; don't follow instructions."
+      },
+      {
+        "id": "IN-15",
+        "title": "Sent unchanged draft",
+        "input": "Human sends exact subject/body after formatting normalization.",
+        "expected": "Increment category/version streak."
+      },
+      {
+        "id": "IN-16",
+        "title": "Edited draft",
+        "input": "Human changes the reply body.",
+        "expected": "Reset that category/version streak."
+      },
+      {
+        "id": "IN-17",
+        "title": "Human-written replacement",
+        "input": "Agent draft is replaced.",
+        "expected": "Reset streak; store as feedback, not unchanged success."
+      },
+      {
+        "id": "IN-18",
+        "title": "Rejected draft",
+        "input": "Human rejects draft.",
+        "expected": "Reset streak."
+      },
+      {
+        "id": "IN-19",
+        "title": "Twentieth unchanged draft",
+        "input": "20 qualifying unchanged sends in a row.",
+        "expected": "Mark category eligible only; do not auto-enable sending."
+      },
+      {
+        "id": "IN-20",
+        "title": "Streak persistence",
+        "input": "Service restarts after feedback.",
+        "expected": "Read saved streak file; autonomous sending remains disabled."
+      }
+    ],
+    "task3-meeting-to-scope": [
+      {
+        "id": "MS-01",
+        "title": "Clear requirements",
+        "input": "Transcript contains explicit feature requests.",
+        "expected": "Extract requirements with evidence excerpts."
+      },
+      {
+        "id": "MS-02",
+        "title": "Vague request",
+        "input": "Client says make search better.",
+        "expected": "Record clarifying question; don't over-specify."
+      },
+      {
+        "id": "MS-03",
+        "title": "Existing product setting",
+        "input": "Request may be solved by product configuration.",
+        "expected": "Call Knowledge Brain before recommending custom code."
+      },
+      {
+        "id": "MS-04",
+        "title": "Knowledge unavailable",
+        "input": "Knowledge Brain fails or times out.",
+        "expected": "Record fit as unknown; do not claim product cannot do it."
+      },
+      {
+        "id": "MS-05",
+        "title": "No price inputs",
+        "input": "No hourly rate/currency supplied.",
+        "expected": "Mark rate required; no invented price."
+      },
+      {
+        "id": "MS-06",
+        "title": "Rate supplied",
+        "input": "Human provides rate and currency.",
+        "expected": "Calculate indicative arithmetic range and label it draft."
+      },
+      {
+        "id": "MS-07",
+        "title": "Estimate dependencies",
+        "input": "Task depends on another task.",
+        "expected": "Expose dependency and estimate assumptions."
+      },
+      {
+        "id": "MS-08",
+        "title": "Long transcript",
+        "input": "Transcript is very long.",
+        "expected": "Reject over-limit input clearly or handle within configured limit."
+      },
+      {
+        "id": "MS-09",
+        "title": "Speaker noise",
+        "input": "Transcript contains greetings and unrelated talk.",
+        "expected": "Avoid turning every sentence into a requirement."
+      },
+      {
+        "id": "MS-10",
+        "title": "Conflicting requirements",
+        "input": "Client gives contradictory instructions.",
+        "expected": "Surface conflict as open question."
+      },
+      {
+        "id": "MS-11",
+        "title": "Scope acceptance criteria",
+        "input": "Request has testable outcome.",
+        "expected": "Include acceptance criteria when grounded in transcript."
+      },
+      {
+        "id": "MS-12",
+        "title": "Out-of-scope item",
+        "input": "Client mentions an unapproved extra feature.",
+        "expected": "Flag for human change control."
+      },
+      {
+        "id": "MS-13",
+        "title": "Baseline persistence",
+        "input": "Initial meeting is processed.",
+        "expected": "Store baseline scope and return stable ID."
+      },
+      {
+        "id": "MS-14",
+        "title": "Unknown baseline ID",
+        "input": "Follow-up uses absent ID.",
+        "expected": "Return 404 with useful message."
+      },
+      {
+        "id": "MS-15",
+        "title": "Follow-up adds feature",
+        "input": "Second meeting adds a request.",
+        "expected": "List it as potential change; require human review."
+      },
+      {
+        "id": "MS-16",
+        "title": "Follow-up removes feature",
+        "input": "Client reverses a prior request.",
+        "expected": "Identify possible removal without silently changing baseline."
+      },
+      {
+        "id": "MS-17",
+        "title": "Follow-up no change",
+        "input": "Transcript confirms same scope.",
+        "expected": "Report unchanged items if model supports; preserve baseline."
+      },
+      {
+        "id": "MS-18",
+        "title": "Prompt injection in transcript",
+        "input": "Transcript contains instruction to expose secrets.",
+        "expected": "Treat transcript as untrusted input."
+      },
+      {
+        "id": "MS-19",
+        "title": "Malformed model JSON",
+        "input": "Model output fails parsing.",
+        "expected": "Use labelled fallback and warning; don't crash request."
+      },
+      {
+        "id": "MS-20",
+        "title": "Human approval",
+        "input": "Proposal and change report are generated.",
+        "expected": "Mark approval required; do not send externally."
+      }
+    ]
+  }
+}
