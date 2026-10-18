@@ -127,9 +127,16 @@ async def polite_get(client: httpx.AsyncClient, url: str, min_delay: float = 1.0
 
 
 async def extract_page(client: httpx.AsyncClient, url: str, delay: float) -> dict[str, Any] | None:
+    # Validate before requesting and after redirects to avoid crawling off-host URLs.
+    initial = urlparse(url)
+    if initial.scheme != "https" or initial.hostname != "support.brilliantdirectories.com":
+        return None
     for attempt in range(3):
         try:
             response = await polite_get(client, url, delay)
+            final_url = urlparse(str(response.url))
+            if final_url.scheme != "https" or final_url.hostname != "support.brilliantdirectories.com":
+                return None
             if response.status_code in (429, 503):
                 await asyncio.sleep(2 ** attempt)
                 continue
@@ -189,7 +196,13 @@ async def ingest(request: IngestRequest) -> dict[str, Any]:
             expanded: list[str] = []
             for child in locs[:10]:
                 try:
+                    child_url = urlparse(child)
+                    if child_url.scheme != "https" or child_url.hostname != parsed.hostname:
+                        continue
                     child_response = await polite_get(client, child, request.min_delay_seconds)
+                    final_child_url = urlparse(str(child_response.url))
+                    if final_child_url.scheme != "https" or final_child_url.hostname != parsed.hostname:
+                        continue
                     child_response.raise_for_status()
                     child_root = ElementTree.fromstring(child_response.text)
                     expanded.extend(el.text.strip() for el in child_root.iter()
