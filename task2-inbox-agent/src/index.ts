@@ -5,6 +5,13 @@ import fs from "node:fs";
 import path from "node:path";
 
 const app = express();
+app.use((req: Request, res: Response, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "http://localhost:8080");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  if (req.method === "OPTIONS") return res.sendStatus(204);
+  next();
+});
 app.use(express.json({ limit: "512kb" }));
 
 const PORT = Number(process.env.PORT ?? 8002);
