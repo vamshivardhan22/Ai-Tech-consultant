@@ -62,9 +62,12 @@ function classify(text: string): { category: string; risk: "low" | "medium" | "h
   const t = text.toLowerCase();
   const riskWords = ["refund", "cancel my account", "delete my data", "lawsuit", "legal", "chargeback", "password", "change ownership"];
   const risk = riskWords.some(word => t.includes(word)) ? "high" : "low";
-  if (/quote|estimate|pricing|cost|proposal|new project/.test(t)) return { category: "sales-quote", risk: "medium" };
-  if (/refund|cancel|chargeback/.test(t)) return { category: "billing-refund", risk: "high" };
+  // High-risk intent wins when an email mixes intents (e.g. refund + pricing).
+  if (/refund|cancel|chargeback|delete my data|lawsuit|legal|password|change ownership/.test(t)) {
+    return { category: "billing-refund", risk: "high" };
+  }
   if (/complaint|unhappy|angry|disappointed/.test(t)) return { category: "complaint", risk: "high" };
+  if (/quote|estimate|pricing|cost|proposal|new project/.test(t)) return { category: "sales-quote", risk: "medium" };
   if (/follow.?up|checking in|update on/.test(t)) return { category: "follow-up", risk };
   if (/error|broken|not working|bug|troubleshoot/.test(t)) return { category: "troubleshooting", risk };
   return { category: "how-to", risk };
