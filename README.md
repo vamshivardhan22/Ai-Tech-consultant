@@ -1,38 +1,52 @@
 # AI Tech Consultant
 
-A capstone project with three connected workflows:
+A capstone prototype with three connected workflows: product knowledge, customer email drafting, and meeting-to-scope generation.
 
-1. **Knowledge Brain (Python)** — ingest product documentation, answer with source citations, abstain when evidence is insufficient, and provide an API for the other workflows.
-2. **Inbox Agent (TypeScript)** — classify customer emails, retrieve facts through the Knowledge Brain API, draft replies for human review, and record feedback.
-3. **Meeting to Scope (Python)** — turn meeting transcripts into evidence-linked requirements, task estimates, a scope of work, and a proposal; compare follow-up meetings against an approved baseline.
+## Run locally
 
-## Status
+Requirements: Docker and Docker Compose.
 
-This repository was initially empty. This README is a starting point, not a claim that the application is implemented or tested. Update the checklist only when the corresponding feature has been verified.
+```bash
+cp .env.example .env
+# Optional: edit .env and add your Anthropic API key.
+docker compose up --build
+```
 
-- [ ] Task 1: Knowledge Brain API and cited answers
-- [ ] Task 1: resumable ingestion and safe sitemap reconciliation
-- [ ] Task 1: screenshot/image understanding linked to articles
-- [ ] Task 1: expert escalation and reviewed knowledge feedback
-- [ ] Task 2: TypeScript email classification and grounded reply drafts
-- [ ] Task 2: feedback ledger and 20-consecutive-unchanged-draft eligibility
-- [ ] Task 3: transcript requirements with evidence references
-- [ ] Task 3: scope, estimates, proposal, and follow-up change report
-- [ ] Human approval gates for external/client-facing actions
-- [ ] Automated tests and recorded model evaluations
-- [ ] Clean setup verified from a fresh checkout
+Open the dashboard at **http://localhost:8080**.
 
-## Requirements
+API documentation:
+- Knowledge Brain: http://localhost:8001/docs
+- Inbox Agent: http://localhost:8002/health
+- Meeting-to-Scope: http://localhost:8003/docs
 
-- Python for Tasks 1 and 3.
-- TypeScript for Task 2 (the assignment allows Python instead if you cannot use TypeScript; do not mix languages within a task).
-- Claude must be central to AI workflows; model choices must be evaluated rather than assumed.
-- Tasks 2 and 3 must call Task 1 through its API and must not duplicate Task 1 implementation code.
+Without `ANTHROPIC_API_KEY`, some workflows use deterministic fallbacks. The fallback paths are useful for checking service wiring but do not count as Claude model evaluations. To ingest public help-center pages, use the Knowledge Brain Swagger page and send `POST /v1/ingest`. The crawler is capped per request; run a small batch first and inspect results.
 
-## Setup
+## What it does
 
-Setup and run commands will be added once the application code and dependency configuration are committed. No runnable application is included in this initial commit.
+1. **Knowledge Brain (Python/FastAPI)** — SQLite document store, capped polite sitemap ingestion, lexical retrieval, cited excerpts, explicit abstention/escalation, and reviewed expert-answer storage.
+2. **Inbox Agent (TypeScript/Express)** — intent/risk classification, Knowledge Brain API call, draft response, review status, and persistent feedback-streak ledger. It does not send email.
+3. **Meeting-to-Scope (Python/FastAPI)** — transcript requirement extraction, product-fit lookup through Task 1's HTTP API, task estimate ranges, proposal draft, saved baseline and follow-up comparison.
 
-## Integrity note
+## Current limitations
 
-Do not report tests, quality scores, latency, costs, mailbox integrations, recordings, or model comparisons unless they have actually been run or completed. Fixture-mode behavior must be labelled as such.
+This is an initial demo scaffold, not a production-ready system. The current Knowledge Brain does not implement vector embeddings, a vector database, screenshot vision, daily scheduled sync, or complete removal reconciliation. The real mailbox adapter is not implemented. Model outputs and fallback estimates need human review. The frontend is a local demo interface without login or role permissions.
+
+Sixty acceptance/regression cases are listed in `evals/cases.json`; they have not been executed as a model evaluation in this repository session. See `DESIGN.md` and `EVALS.md` for details.
+
+## Configuration and safety
+
+Never commit `.env`, API keys, mailbox tokens, or customer data. The local dashboard is allowed to call the APIs from `http://localhost:8080`. Do not expose these services publicly without authentication, authorization, rate limiting, monitoring, backup/recovery, and a production CORS/CSRF review.
+
+## Verification checklist
+
+- [ ] `docker compose up --build` completes successfully on a clean checkout.
+- [ ] All three services return healthy responses.
+- [ ] A supported and an unknown knowledge question are tested.
+- [ ] Email draft flow calls the Knowledge Brain; send remains disabled.
+- [ ] Feedback streak increments/resets and persists across restart.
+- [ ] Meeting scope and follow-up comparison both require human approval.
+- [ ] Model evals were run with two Claude candidates and actual quality/cost/latency were recorded.
+- [ ] Three real role-play meeting transcripts were recorded, including a follow-up.
+- [ ] Demo video and AI coding-tool log are complete.
+
+Do not mark items complete until verified.
