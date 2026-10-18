@@ -1,0 +1,51 @@
+services:
+  knowledge-brain:
+    build: ./task1-knowledge-brain
+    environment:
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      CLAUDE_MODEL: ${CLAUDE_MODEL:-claude-sonnet-4-5}
+      DATABASE_PATH: /data/knowledge.db
+    volumes:
+      - knowledge_data:/data
+    ports:
+      - "8001:8001"
+    restart: unless-stopped
+
+  inbox-agent:
+    build: ./task2-inbox-agent
+    environment:
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      CLAUDE_MODEL: ${CLAUDE_MODEL:-claude-sonnet-4-5}
+      KNOWLEDGE_BRAIN_URL: http://knowledge-brain:8001
+      PORT: 8002
+    depends_on:
+      - knowledge-brain
+    ports:
+      - "8002:8002"
+    restart: unless-stopped
+
+  meeting-scope:
+    build: ./task3-meeting-to-scope
+    environment:
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      CLAUDE_MODEL: ${CLAUDE_MODEL:-claude-sonnet-4-5}
+      KNOWLEDGE_BRAIN_URL: http://knowledge-brain:8001
+    depends_on:
+      - knowledge-brain
+    ports:
+      - "8003:8003"
+    restart: unless-stopped
+
+  dashboard:
+    image: nginx:alpine
+    volumes:
+      - ./web:/usr/share/nginx/html:ro
+    ports:
+      - "8080:80"
+    depends_on:
+      - knowledge-brain
+      - inbox-agent
+      - meeting-scope
+
+volumes:
+  knowledge_data:
