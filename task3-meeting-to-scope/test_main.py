@@ -9,7 +9,8 @@ def test_fallback_requirements_keep_evidence():
     assert all(item["status"] == "needs_review" for item in requirements)
 
 
-def test_health_endpoint():
+def test_health_endpoint(tmp_path, monkeypatch):
+    monkeypatch.setattr(scope, "DB_PATH", str(tmp_path / "meetings.db"))
     with TestClient(scope.app) as client:
         response = client.get("/health")
     assert response.status_code == 200
