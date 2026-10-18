@@ -12,6 +12,7 @@ from uuid import uuid4
 import httpx
 from anthropic import AsyncAnthropic
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
 MODEL = os.getenv("CLAUDE_MODEL", "claude-sonnet-4-5")
@@ -19,6 +20,7 @@ API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
 KB_URL = os.getenv("KNOWLEDGE_BRAIN_URL", "http://localhost:8001")
 DB_PATH = os.getenv("MEETING_DB_PATH", "/data/meetings.db")
 app = FastAPI(title="AI Tech Consultant — Meeting to Scope", version="0.1.0")
+app.add_middleware(CORSMiddleware, allow_origins=["http://localhost:8080"], allow_credentials=False, allow_methods=["GET", "POST", "OPTIONS"], allow_headers=["*"])
 
 
 def db() -> sqlite3.Connection:
