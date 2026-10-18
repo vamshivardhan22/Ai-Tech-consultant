@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI Tech Consultant</title>
+<style>
+:root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;color:#e8edf5;background:#0b1020;font-synthesis:none}
+*{box-sizing:border-box}body{margin:0}header{padding:26px max(20px,calc((100vw - 1120px)/2));border-bottom:1px solid #25304a;background:#10172a}
+.eyebrow{color:#8fa4d1;font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:700}h1{margin:8px 0 5px;font-size:clamp(25px,4vw,38px)}header p{margin:0;color:#aab8d0;max-width:750px;line-height:1.5}
+main{max-width:1120px;margin:26px auto;padding:0 20px}.statusbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:22px}.pill{border:1px solid #2b3753;border-radius:999px;padding:7px 11px;font-size:12px;color:#aab8d0}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:20px 0}.tab{background:#151e33;color:#b9c7df;border:1px solid #2b3753;border-radius:10px;padding:10px 15px;cursor:pointer;font-weight:650}.tab[aria-selected=true]{background:#24365d;border-color:#7393d4;color:white}.panel{background:#10182a;border:1px solid #263450;border-radius:16px;padding:clamp(16px,3vw,26px)}.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.full{grid-column:1/-1}h2{margin:0 0 7px;font-size:22px}h3{margin:0 0 12px;font-size:15px}p.help{color:#98a8c2;line-height:1.55;font-size:14px;margin:0 0 20px}
+label{display:block;font-size:13px;color:#c5d0e3;font-weight:650;margin:13px 0 6px}input,textarea,select{width:100%;background:#0a1120;color:#e8edf5;border:1px solid #33415f;border-radius:9px;padding:11px 12px;font:inherit;font-size:14px;outline:none}input:focus,textarea:focus{border-color:#86a4e5}textarea{min-height:130px;resize:vertical;line-height:1.5}.btn{background:#9db8f7;color:#111a2d;border:0;border-radius:9px;padding:11px 16px;font-weight:750;cursor:pointer;margin-top:15px}.btn:disabled{opacity:.55;cursor:wait}.output{margin-top:18px;border:1px solid #293957;border-radius:12px;overflow:hidden}.out-head{padding:10px 13px;background:#17233a;color:#9eb7ec;font-size:12px;font-weight:750;text-transform:uppercase;letter-spacing:.08em}.out-body{padding:14px;white-space:pre-wrap;overflow-wrap:anywhere;max-height:500px;overflow:auto;font:13px/1.55 ui-monospace,SFMono-Regular,Consolas,monospace;color:#d2deef}.note{font-size:12px;color:#8e9fbb;line-height:1.5;margin-top:12px}.warning{color:#ffd28a}.error{color:#ff9eaa}.ok{color:#94e5bb}.hidden{display:none}.feature{border:1px solid #263450;border-radius:12px;padding:14px;background:#0d1425}.feature b{display:block;margin-bottom:5px}.feature span{color:#96a7c4;font-size:13px;line-height:1.45}.featuregrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:20px 0}@media(max-width:760px){.grid{grid-template-columns:1fr}.full{grid-column:auto}.featuregrid{grid-template-columns:1fr}header{padding:23px 20px}}
+</style>
+</head>
+<body>
+<header><div class="eyebrow">Applied AI · Capstone</div><h1>AI Tech Consultant</h1><p>One workspace for product knowledge, customer email drafts, and meeting-to-scope workflows. Drafts and proposals require human review.</p></header>
+<main>
+<div class="statusbar"><span class="pill">Task 1 · Python Knowledge Brain</span><span class="pill">Task 2 · TypeScript Inbox Agent</span><span class="pill">Task 3 · Python Meeting-to-Scope</span><span class="pill warning">Demo build · verify before production</span></div>
+<div class="featuregrid"><div class="feature"><b>Grounded answers</b><span>Ask the Knowledge Brain and inspect its cited source excerpts.</span></div><div class="feature"><b>Human-reviewed replies</b><span>Generate customer email drafts; sending is intentionally disabled.</span></div><div class="feature"><b>Traceable scope</b><span>Extract transcript requirements, estimate tasks, and compare follow-ups.</span></div></div>
+<nav class="tabs" role="tablist"><button class="tab" role="tab" aria-selected="true" data-tab="knowledge">Knowledge Brain</button><button class="tab" role="tab" aria-selected="false" data-tab="inbox">Inbox Agent</button><button class="tab" role="tab" aria-selected="false" data-tab="meeting">Meeting to Scope</button></nav>
+<section class="panel" id="knowledge">
+<h2>Ask product knowledge</h2><p class="help">The answer API uses indexed content and provides citations. The initial database contains clearly labelled demo fixtures until the public help center is ingested.</p>
+<form id="knowledgeForm"><label for="question">Customer question</label><textarea id="question" required minlength="3">How do I get started with the dashboard settings?</textarea><button class="btn">Get cited answer</button></form><div class="output"><div class="out-head">Answer and sources</div><div class="out-body" id="knowledgeOutput">Submit a question to begin.</div></div>
+</section>
+<section class="panel hidden" id="inbox">
+<h2>Draft a customer reply</h2><p class="help">The service asks the Knowledge Brain for evidence, classifies risk, and drafts a response. It never sends email.</p>
+<form id="inboxForm"><div class="grid"><div><label for="sender">Customer email</label><input id="sender" type="email" required value="alex@example.com"></div><div><label for="subject">Subject</label><input id="subject" required value="How do I update my site settings?"></div><div class="full"><label for="emailBody">Email body</label><textarea id="emailBody" required>Hi, can you tell me where I can update my site settings? Thanks.</textarea></div></div><button class="btn">Generate draft</button></form><div class="output"><div class="out-head">Draft and review status</div><div class="out-body" id="inboxOutput">Submit an email to begin.</div></div>
+</section>
+<section class="panel hidden" id="meeting">
+<h2>Turn a meeting into a scope</h2><p class="help">Requirement extraction, product-fit lookup, task estimate, and proposal. Estimates are drafts, not binding quotes.</p>
+<form id="meetingForm"><label for="client">Client or company</label><input id="client" required value="Northstar Local Business"><label for="transcript">Meeting transcript</label><textarea id="transcript" required minlength="20">Client: We need customers to search our directory by city and service. The results page should show business photos. We also want a contact form on each profile. The owner wants to review all changes before launch. We have not confirmed the launch date or budget.</textarea><div class="grid"><div><label for="rate">Hourly rate (optional)</label><input id="rate" type="number" min="0.01" step="0.01" placeholder="Only enter an agreed rate"></div><div><label for="currency">Currency (optional)</label><input id="currency" maxlength="8" placeholder="e.g. USD"></div></div><button class="btn">Generate scope and proposal</button></form><div class="output"><div class="out-head">Scope, estimates and proposal</div><div class="out-body" id="meetingOutput">Submit a transcript to begin.</div></div>
+<div class="output"><div class="out-head">Follow-up change analysis</div><div class="out-body" id="compareOutput">Generate a baseline first, then use its ID for the follow-up analysis.</div></div>
+<form id="compareForm"><label for="baseline">Baseline ID</label><input id="baseline" required placeholder="Filled after generating a scope"><label for="followup">Follow-up meeting transcript</label><textarea id="followup" required>Client: Add filtering by membership level too. We no longer need the contact form on every business profile; use a single contact page. Please keep the launch date open until the owner reviews the scope.</textarea><button class="btn">Compare follow-up</button></form>
+</section>
+<p class="note">This interface talks to local services on ports 8001, 8002 and 8003. A successful screen render does not by itself prove backend reliability. Check service health and test results before presenting the project.</p>
+</main>
+<script>
+const $ = (id) => document.getElementById(id);
+document.querySelectorAll("[data-tab]").forEach(button => button.addEventListener("click", () => {
+  document.querySelectorAll("[data-tab]").forEach(b => b.setAttribute("aria-selected", String(b === button)));
+  ["knowledge","inbox","meeting"].forEach(id => $(id).classList.toggle("hidden", id !== button.dataset.tab));
+}));
+async function callApi(url, body) {
+  const response = await fetch(url, { method:"POST", headers:{"content-type":"application/json"}, body:JSON.stringify(body) });
+  const data = await response.json().catch(() => ({error:"Service returned non-JSON response"}));
+  if (!response.ok) throw new Error(data.detail || data.error || `HTTP ${response.status}`);
+  return data;
+}
+function show(id, value, error=false) { $(id).textContent = typeof value === "string" ? value : JSON.stringify(value, null, 2); $(id).classList.toggle("error",error); }
+async function runForm(formId, outputId, work) {
+  $(formId).addEventListener("submit", async (e) => {
+    e.preventDefault(); const button=e.submitter; button.disabled=true; button.textContent="Working…";
+    try { show(outputId, await work()); } catch(error) { show(outputId, {error:String(error), hint:"Confirm all three API services are running. Check the terminal logs for details."}, true); }
+    finally { button.disabled=false; button.textContent=button.dataset.original || button.textContent.replace("Working…","Submit"); }
+  });
+}
+document.querySelectorAll("form .btn").forEach(b=>b.dataset.original=b.textContent);
+runForm("knowledgeForm","knowledgeOutput",()=>callApi("http://localhost:8001/v1/answers",{question:$("question").value,top_k:5}));
+runForm("inboxForm","inboxOutput",()=>callApi("http://localhost:8002/v1/draft",{sender:$("sender").value,subject:$("subject").value,body:$("emailBody").value}));
+runForm("meetingForm","meetingOutput",async()=>{
+ const data={client_name:$("client").value,transcript:$("transcript").value};
+ if($("rate").value && $("currency").value){data.hourly_rate=Number($("rate").value);data.currency=$("currency").value;}
+ const result=await callApi("http://localhost:8003/v1/meetings/process",data);
+ $("baseline").value=result.baseline_id; show("compareOutput","Baseline saved: "+result.baseline_id+"\nNow submit a follow-up transcript to compare."); return result;
+});
+runForm("compareForm","compareOutput",()=>callApi("http://localhost:8003/v1/meetings/compare",{baseline_id:$("baseline").value,followup_transcript:$("followup").value}));
+</script>
+</body></html>
