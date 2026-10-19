@@ -10,7 +10,7 @@
         }
       ]
     },
-    "task1-knowledge-brain": {
+    "knowledge-brain": {
       "root": "task1-knowledge-brain",
       "framework": "fastapi",
       "entrypoint": "main:app",
@@ -21,14 +21,14 @@
         }
       ]
     },
-    "task2-inbox-agent": {
+    "inbox-agent": {
       "root": "task2-inbox-agent",
       "framework": "express",
       "entrypoint": "src/index.ts",
       "bindings": [
         {
           "type": "service",
-          "service": "task1-knowledge-brain",
+          "service": "knowledge-brain",
           "format": "url",
           "env": "KNOWLEDGE_BRAIN_URL"
         }
@@ -40,14 +40,14 @@
         }
       ]
     },
-    "task3-meeting-to-scope": {
+    "meeting-to-scope": {
       "root": "task3-meeting-to-scope",
       "framework": "fastapi",
       "entrypoint": "main:app",
       "bindings": [
         {
           "type": "service",
-          "service": "task1-knowledge-brain",
+          "service": "knowledge-brain",
           "format": "url",
           "env": "KNOWLEDGE_BRAIN_URL"
         }
@@ -64,19 +64,19 @@
     {
       "source": "/api/knowledge/(.*)",
       "destination": {
-        "service": "task1-knowledge-brain"
+        "service": "knowledge-brain"
       }
     },
     {
       "source": "/api/inbox/(.*)",
       "destination": {
-        "service": "task2-inbox-agent"
+        "service": "inbox-agent"
       }
     },
     {
       "source": "/api/meetings/(.*)",
       "destination": {
-        "service": "task3-meeting-to-scope"
+        "service": "meeting-to-scope"
       }
     },
     {
