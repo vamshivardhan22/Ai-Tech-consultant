@@ -1,112 +1,75 @@
 # AI Tech Consultant
 
-An AI-powered capstone prototype that connects product knowledge, customer email drafting, and meeting-to-scope generation through API-driven workflows.
+AI Tech Consultant is a modular prototype that connects product knowledge, customer email drafting, and meeting-to-scope planning. Three services share a Knowledge Brain so that reply drafts and scope recommendations can use the same product information.
 
-## Overview
+## Features
 
-AI Tech Consultant brings three focused services together around a shared Knowledge Brain. It demonstrates how grounded product information can support customer communication and project planning, while keeping important decisions subject to human review.
+### Knowledge Brain
+- Ingests public help-center pages through a capped sitemap crawler.
+- Stores content in SQLite and retrieves relevant passages with lexical search.
+- Returns answers with supporting excerpts and can indicate when the available information is insufficient.
+- Stores reviewed expert answers for later use.
 
-## Core Features
-
-### 1. Knowledge Brain — Python, FastAPI
-- Ingests public help-center content through a capped sitemap crawler.
-- Stores documents in SQLite and retrieves relevant content using lexical search.
-- Returns answers with cited excerpts and supports abstention/escalation for unanswered questions.
-- Stores reviewed expert answers for future use.
-
-### 2. Inbox Agent — TypeScript, Express
+### Inbox Agent
 - Classifies email intent and risk.
-- Calls the Knowledge Brain API to ground customer reply drafts in product information.
-- Tracks review status and feedback streaks.
-- Email delivery is not implemented; sending remains disabled in this demo.
+- Uses the Knowledge Brain API to ground customer reply drafts in product documentation.
+- Tracks review status and feedback.
+- Does not send emails in the current demo; delivery is intentionally disabled.
 
-### 3. Meeting-to-Scope — Python, FastAPI
-- Extracts requirements from client meeting transcripts.
-- Checks product fit through the Knowledge Brain HTTP API.
-- Produces development task lists, effort estimate ranges, and proposal drafts.
+### Meeting-to-Scope
+- Extracts requirements from meeting transcripts.
+- Checks product fit using the Knowledge Brain API.
+- Drafts development tasks, effort ranges, and a project proposal.
 - Saves a baseline and compares follow-up requirements with the original scope.
 
 ## Architecture
 
 ```text
-                         Dashboard
-                             |
-             +---------------+----------------+
-             |               |                |
-             v               v                v
-       Knowledge Brain   Inbox Agent   Meeting-to-Scope
-       Python/FastAPI   TypeScript/Express  Python/FastAPI
-             ^               |                |
-             +---------------+----------------+
-                  Shared Knowledge Brain API
+Dashboard
+  ├── Knowledge Brain (Python / FastAPI)
+  ├── Inbox Agent (TypeScript / Express)
+  └── Meeting-to-Scope (Python / FastAPI)
+         └── Shared Knowledge Brain API
 ```
 
-The Knowledge Brain is the shared source of product information. The Inbox Agent calls it when drafting replies, and Meeting-to-Scope calls it when checking existing product capabilities. Each service has a distinct responsibility and can be tested independently.
+## Tech stack
 
-## Technology Stack
+- Python and FastAPI
+- TypeScript, Node.js, and Express
+- SQLite
+- HTML, CSS, and JavaScript
+- REST APIs
+- Docker Compose
 
-- **Languages:** Python, TypeScript, JavaScript
-- **Backend:** FastAPI, Express, Node.js
-- **Data storage:** SQLite
-- **Integration:** REST APIs, HTTP
-- **Frontend:** HTML, CSS, JavaScript
-- **Local orchestration:** Docker Compose
-- **Version control:** Git and GitHub
+## Run locally
 
-## Run Locally
-
-**Requirements:** Docker and Docker Compose.
+Requirements: Docker and Docker Compose.
 
 ```bash
 git clone https://github.com/vamshivardhan22/Ai-Tech-consultant.git
 cd Ai-Tech-consultant
 cp .env.example .env
-# Optional: edit .env and add your Anthropic API key.
 docker compose up --build
 ```
 
-Open the dashboard at **http://localhost:8080**.
+Open the dashboard at http://localhost:8080.
 
-### Service endpoints
+API documentation and health checks are available at:
 
-- Knowledge Brain API docs: http://localhost:8001/docs
+- Knowledge Brain API: http://localhost:8001/docs
 - Inbox Agent health check: http://localhost:8002/health
-- Meeting-to-Scope API docs: http://localhost:8003/docs
+- Meeting-to-Scope API: http://localhost:8003/docs
 
-Without `ANTHROPIC_API_KEY`, some workflows use deterministic fallbacks. These fallbacks help verify service wiring but do not count as Claude model evaluations. To ingest public help-center pages, open the Knowledge Brain Swagger page and call `POST /v1/ingest`. Crawling is capped per request; start with a small batch and inspect the results.
+Some flows use deterministic fallbacks when an Anthropic API key is not configured. These keep the services testable but should not be treated as LLM evaluation results.
 
-## Engineering Principles
+## Limitations
 
-- **Grounded responses:** Use retrieved product documentation and expose cited excerpts.
-- **Human oversight:** Keep customer communication and scope decisions reviewable.
-- **Modular design:** Separate services and integrate them through explicit API boundaries.
-- **Traceability:** Structure requirements, estimates, and scope changes for review.
-- **Testability:** Verify components and service integration independently.
+This is a prototype, not a production-ready customer communication system. The mailbox delivery adapter is not implemented, the frontend does not provide user authentication or role-based access, and generated replies, estimates, and scope changes require human review. The Knowledge Brain uses lexical retrieval rather than a vector database. Review `DESIGN.md` and `EVALS.md` for further design notes and evaluation plans.
 
-## Current Limitations
+## Security
 
-This is an initial demo scaffold, not a production-ready system. The current Knowledge Brain does not implement vector embeddings, a vector database, screenshot vision, daily scheduled synchronization, or complete removal reconciliation. A real mailbox adapter is not implemented. Model outputs and fallback estimates require human review. The frontend is a local demo interface without login or role permissions.
+Do not commit `.env` files, API keys, mailbox tokens, or customer data. Do not expose the services publicly without appropriate authentication, authorization, rate limiting, monitoring, backups, and a production security review.
 
-Sixty acceptance/regression cases are listed in `evals/cases.json`; they have not been executed as a model evaluation in this repository session. See [DESIGN.md](DESIGN.md) and [EVALS.md](EVALS.md) for design details and evaluation plans.
+## Skills demonstrated
 
-## Security Notes
-
-Never commit `.env`, API keys, mailbox tokens, or customer data. Do not expose these services publicly without authentication, authorization, rate limiting, monitoring, backup/recovery, and a production CORS/CSRF review.
-
-## Verification Checklist
-
-- [ ] Start successfully with `docker compose up --build` from a clean checkout.
-- [ ] Verify health and API responses from all three services.
-- [ ] Test both an answerable and an unknown knowledge question.
-- [ ] Confirm the email draft flow calls the Knowledge Brain; sending remains disabled.
-- [ ] Verify feedback streak behavior and persistence across restart.
-- [ ] Test meeting scope generation and follow-up comparison with human review.
-- [ ] Run model evaluations with two Claude candidates and record actual quality, cost, and latency.
-- [ ] Record three role-play meeting transcripts, including a follow-up.
-- [ ] Complete the demo video and AI coding-tool log.
-
-Do not mark checklist items complete until verified.
-
-## Repository
-
-[GitHub: vamshivardhan22/Ai-Tech-consultant](https://github.com/vamshivardhan22/Ai-Tech-consultant)
+Python, FastAPI, TypeScript, Express, REST API integration, SQLite, retrieval-based question answering, workflow orchestration, and human-in-the-loop review.
