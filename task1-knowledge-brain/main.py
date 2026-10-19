@@ -249,10 +249,14 @@ async def answer(request: AnswerRequest) -> AnswerResponse:
     with closing(connect()) as con:
         rows = con.execute("SELECT url,title,content,images,content_hash FROM documents WHERE active=1").fetchall()
     ranked = []
+    
+    ranked = []
     for row in rows:
+        title_words = terms(row["title"])
         words = terms(row["title"] + " " + row["content"])
         overlap = qterms & words
         score = len(overlap) / max(1, len(qterms))
+        score += 0.5 * len(qterms & title_words) / max(1, len(qterms))
         if score > 0:
             ranked.append((score, row, overlap))
     ranked.sort(key=lambda item: item[0], reverse=True)
@@ -292,9 +296,11 @@ async def answer(request: AnswerRequest) -> AnswerResponse:
             model = MODEL
         except Exception:
             generated = ""
-    if not generated:
-        # Honest extractive fallback: expose evidence rather than inventing a response.
-        generated = f"Relevant documentation found: {citations[0].excerpt}"
+        if not generated:
+            # Honest extractive fallback: use the highest-ranked document.
+            best_title = matches[0][1]["title"]
+            best_excerpt = matches[0][1]["content"][:700]
+            generated = f"Relevant documentation found in '{best_title}': {best_excerpt}"
     return AnswerResponse(answer=generated, citations=citations, image_refs=sorted(set(image_refs)),
         abstained=False, knowledge_version="sqlite-lexical-v1",
         latency_ms=round((time.perf_counter()-started)*1000), model=model, usage=usage)
