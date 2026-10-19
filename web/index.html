@@ -31,7 +31,7 @@ label{display:block;font-size:13px;color:#c5d0e3;font-weight:650;margin:13px 0 6
 <div class="output"><div class="out-head">Follow-up change analysis</div><div class="out-body" id="compareOutput">Generate a baseline first, then use its ID for the follow-up analysis.</div></div>
 <form id="compareForm"><label for="baseline">Baseline ID</label><input id="baseline" required placeholder="Filled after generating a scope"><label for="followup">Follow-up meeting transcript</label><textarea id="followup" required>Client: Add filtering by membership level too. We no longer need the contact form on every business profile; use a single contact page. Please keep the launch date open until the owner reviews the scope.</textarea><button class="btn">Compare follow-up</button></form>
 </section>
-<p class="note">This interface talks to local services on ports 8001, 8002 and 8003. A successful screen render does not by itself prove backend reliability. Check service health and test results before presenting the project.</p>
+<p class="note">This interface uses the deployed API routes. A successful screen render does not by itself prove backend reliability. Check service health and test results before presenting the project.</p>
 </main>
 <script>
 const $ = (id) => document.getElementById(id);
@@ -54,14 +54,14 @@ async function runForm(formId, outputId, work) {
   });
 }
 document.querySelectorAll("form .btn").forEach(b=>b.dataset.original=b.textContent);
-runForm("knowledgeForm","knowledgeOutput",()=>callApi("http://localhost:8001/v1/answers",{question:$("question").value,top_k:5}));
-runForm("inboxForm","inboxOutput",()=>callApi("http://localhost:8002/v1/draft",{sender:$("sender").value,subject:$("subject").value,body:$("emailBody").value}));
+runForm("knowledgeForm","knowledgeOutput",()=>callApi("/api/knowledge/v1/answers",{question:$("question").value,top_k:5}));
+runForm("inboxForm","inboxOutput",()=>callApi("/api/inbox/v1/draft",{sender:$("sender").value,subject:$("subject").value,body:$("emailBody").value}));
 runForm("meetingForm","meetingOutput",async()=>{
  const data={client_name:$("client").value,transcript:$("transcript").value};
  if($("rate").value && $("currency").value){data.hourly_rate=Number($("rate").value);data.currency=$("currency").value;}
- const result=await callApi("http://localhost:8003/v1/meetings/process",data);
+ const result=await callApi("/api/meetings/v1/meetings/process",data);
  $("baseline").value=result.baseline_id; show("compareOutput","Baseline saved: "+result.baseline_id+"\nNow submit a follow-up transcript to compare."); return result;
 });
-runForm("compareForm","compareOutput",()=>callApi("http://localhost:8003/v1/meetings/compare",{baseline_id:$("baseline").value,followup_transcript:$("followup").value}));
+runForm("compareForm","compareOutput",()=>callApi("/api/meetings/v1/meetings/compare",{baseline_id:$("baseline").value,followup_transcript:$("followup").value}));
 </script>
 </body></html>
