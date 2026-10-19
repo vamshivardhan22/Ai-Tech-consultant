@@ -1,0 +1,89 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "services": {
+    "web": {
+      "root": "web",
+      "rewrites": [
+        {
+          "source": "/(.*)",
+          "destination": "/index.html"
+        }
+      ]
+    },
+    "task1-knowledge-brain": {
+      "root": "task1-knowledge-brain",
+      "framework": "fastapi",
+      "entrypoint": "main:app",
+      "rewrites": [
+        {
+          "source": "/api/knowledge/:path(.*)?",
+          "destination": "/:path"
+        }
+      ]
+    },
+    "task2-inbox-agent": {
+      "root": "task2-inbox-agent",
+      "framework": "express",
+      "entrypoint": "src/index.ts",
+      "bindings": [
+        {
+          "type": "service",
+          "service": "task1-knowledge-brain",
+          "format": "url",
+          "env": "KNOWLEDGE_BRAIN_URL"
+        }
+      ],
+      "rewrites": [
+        {
+          "source": "/api/inbox/:path(.*)?",
+          "destination": "/:path"
+        }
+      ]
+    },
+    "task3-meeting-to-scope": {
+      "root": "task3-meeting-to-scope",
+      "framework": "fastapi",
+      "entrypoint": "main:app",
+      "bindings": [
+        {
+          "type": "service",
+          "service": "task1-knowledge-brain",
+          "format": "url",
+          "env": "KNOWLEDGE_BRAIN_URL"
+        }
+      ],
+      "rewrites": [
+        {
+          "source": "/api/meetings/:path(.*)?",
+          "destination": "/:path"
+        }
+      ]
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/knowledge/(.*)",
+      "destination": {
+        "service": "task1-knowledge-brain"
+      }
+    },
+    {
+      "source": "/api/inbox/(.*)",
+      "destination": {
+        "service": "task2-inbox-agent"
+      }
+    },
+    {
+      "source": "/api/meetings/(.*)",
+      "destination": {
+        "service": "task3-meeting-to-scope"
+      }
+    },
+    {
+      "source": "/(.*)",
+      "destination": {
+        "service": "web"
+      }
+    }
+  ]
+}
